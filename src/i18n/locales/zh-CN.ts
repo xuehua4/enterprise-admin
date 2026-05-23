@@ -179,6 +179,27 @@ export default {
   header: {
     home: '首页',
     profile: '个人中心',
-    logout: '退出登录'
+    logout: '退出登录',
+    fullscreen: '全屏',
+    exitFullscreen: '退出全屏'
+  },
+  tabs: {
+    closeOther: '关闭其他',
+    closeRight: '关闭右侧',
+    closeAll: '关闭全部',
+    refresh: '刷新',
+    close: '关闭'
+  },
+  search: {
+    placeholder: '搜索页面...',
+    title: '快速导航',
+    inputPlaceholder: '输入关键词搜索页面...',
+    noResults: '没有找到相关页面'
+  },
+  guide: {
+    skip: '跳过',
+    prev: '上一步',
+    next: '下一步',
+    finish: '完成'
   }
 }

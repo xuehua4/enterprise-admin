@@ -56,6 +56,12 @@ const router = createRouter({
           name: 'About',
           component: () => import('@/views/about/index.vue'),
           meta: { title: 'About', icon: 'InfoFilled', permission: 'about:view' }
+        },
+        {
+          path: 'redirect/:path(.*)',
+          name: 'Redirect',
+          component: () => import('@/views/redirect/index.vue'),
+          meta: { hidden: true }
         }
       ]
     },

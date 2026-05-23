@@ -1,0 +1,191 @@
+<template>
+  <div class="tab-bar">
+    <div class="tab-list">
+      <el-tag
+        v-for="tab in tabsStore.tabs"
+        :key="tab.path"
+        :closable="tab.closable"
+        :effect="tab.path === tabsStore.activeTab ? 'dark' : 'plain'"
+        class="tab-item"
+        :class="{ active: tab.path === tabsStore.activeTab }"
+        @click="goTo(tab.path)"
+        @close="closeTab(tab.path)"
+        @contextmenu.prevent="showContext($event, tab)"
+      >
+        <el-icon v-if="tab.icon" class="tab-icon"><component :is="tab.icon" /></el-icon>
+        {{ tab.title }}
+      </el-tag>
+    </div>
+    <div class="tab-actions">
+      <el-dropdown trigger="click" @command="handleCommand">
+        <el-icon class="action-icon" size="18"><ArrowDown /></el-icon>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item command="closeOther">{{ $t('tabs.closeOther') }}</el-dropdown-item>
+            <el-dropdown-item command="closeRight">{{ $t('tabs.closeRight') }}</el-dropdown-item>
+            <el-dropdown-item command="closeAll">{{ $t('tabs.closeAll') }}</el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+    </div>
+
+    <!-- Right-click context menu -->
+    <div
+      v-if="contextMenu.visible"
+      class="context-menu"
+      :style="{ left: contextMenu.x + 'px', top: contextMenu.y + 'px' }"
+    >
+      <div class="context-item" @click="refreshTab">{{ $t('tabs.refresh') }}</div>
+      <div class="context-item" @click="closeTab(contextMenu.tab?.path!)">{{ $t('tabs.close') }}</div>
+      <div class="context-item" @click="closeOther">{{ $t('tabs.closeOther') }}</div>
+      <div class="context-item" @click="closeRight">{{ $t('tabs.closeRight') }}</div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { reactive, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useTabsStore, type TabItem } from '@/stores/tabs'
+import { ArrowDown } from '@element-plus/icons-vue'
+
+const router = useRouter()
+const tabsStore = useTabsStore()
+
+const contextMenu = reactive({
+  visible: false,
+  x: 0,
+  y: 0,
+  tab: null as TabItem | null
+})
+
+function goTo(path: string) {
+  tabsStore.activeTab = path
+  router.push(path)
+}
+
+function closeTab(path: string) {
+  const newActive = tabsStore.removeTab(path)
+  if (newActive) router.push(newActive)
+}
+
+function showContext(e: MouseEvent, tab: TabItem) {
+  contextMenu.visible = true
+  contextMenu.x = e.clientX
+  contextMenu.y = e.clientY
+  contextMenu.tab = tab
+}
+
+function hideContext() {
+  contextMenu.visible = false
+}
+
+function refreshTab() {
+  router.replace({ path: '/redirect', query: { path: contextMenu.tab?.path } })
+  hideContext()
+}
+
+function closeOther() {
+  if (contextMenu.tab) {
+    tabsStore.removeOtherTabs(contextMenu.tab.path)
+    router.push(contextMenu.tab.path)
+  }
+  hideContext()
+}
+
+function closeRight() {
+  if (contextMenu.tab) {
+    tabsStore.removeRightTabs(contextMenu.tab.path)
+    router.push(contextMenu.tab.path)
+  }
+  hideContext()
+}
+
+function handleCommand(cmd: string) {
+  const active = tabsStore.activeTab
+  if (cmd === 'closeOther') tabsStore.removeOtherTabs(active)
+  else if (cmd === 'closeRight') tabsStore.removeRightTabs(active)
+  else if (cmd === 'closeAll') {
+    tabsStore.removeAllTabs()
+    router.push('/dashboard')
+  }
+}
+
+onMounted(() => document.addEventListener('click', hideContext))
+onUnmounted(() => document.removeEventListener('click', hideContext))
+</script>
+
+<style scoped lang="scss">
+.tab-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--card-bg, #fff);
+  border-bottom: 1px solid var(--border-color, #e6e6e6);
+  padding: 4px 8px;
+  min-height: 36px;
+}
+
+.tab-list {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  flex: 1;
+  padding-right: 8px;
+
+  &::-webkit-scrollbar {
+    height: 0;
+  }
+}
+
+.tab-item {
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 12px;
+  transition: all 0.2s;
+  user-select: none;
+
+  .tab-icon {
+    margin-right: 4px;
+    font-size: 13px;
+  }
+
+  &.active {
+    color: #fff;
+    background: #409EFF;
+    border-color: #409EFF;
+  }
+}
+
+.tab-actions {
+  flex-shrink: 0;
+}
+
+.action-icon {
+  cursor: pointer;
+  color: var(--text-color-secondary, #909399);
+  &:hover { color: #409EFF; }
+}
+
+.context-menu {
+  position: fixed;
+  z-index: 9999;
+  background: #fff;
+  border: 1px solid #e4e7ed;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  padding: 4px 0;
+  min-width: 120px;
+}
+
+.context-item {
+  padding: 8px 16px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #606266;
+  &:hover {
+    background: #f5f7fa;
+    color: #409EFF;
+  }
+}
+</style>

@@ -36,19 +36,27 @@
             <Fold v-if="!isCollapsed" />
             <Expand v-else />
           </el-icon>
+
+          <!-- Breadcrumb -->
           <el-breadcrumb separator="/">
             <el-breadcrumb-item :to="{ path: '/' }">{{ $t('header.home') }}</el-breadcrumb-item>
             <el-breadcrumb-item v-if="currentRouteTitle">{{ currentRouteTitle }}</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
         <div class="header-right">
+          <!-- Global Search -->
+          <GlobalSearch />
+
           <!-- Theme Toggle -->
-          <el-tooltip :content="themeStore.isDark ? 'Light Mode' : 'Dark Mode'">
-            <el-icon class="header-icon" size="20" @click="themeStore.toggleTheme">
+          <el-tooltip :content="themeStore.isDark ? $t('settings.lightTheme') : $t('settings.darkTheme')">
+            <el-icon class="header-icon theme-toggle" size="20" @click="themeStore.toggleTheme">
               <Sunny v-if="themeStore.isDark" />
               <Moon v-else />
             </el-icon>
           </el-tooltip>
+
+          <!-- Fullscreen -->
+          <FullscreenToggle />
 
           <!-- Language Switch -->
           <el-dropdown trigger="click" @command="handleLanguageChange">
@@ -58,14 +66,21 @@
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item command="zh-CN" :class="{ 'is-active': currentLocale === 'zh-CN' }">
-                  简体中文
+                  🇨🇳 简体中文
                 </el-dropdown-item>
                 <el-dropdown-item command="en-US" :class="{ 'is-active': currentLocale === 'en-US' }">
-                  English
+                  🇺🇸 English
                 </el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
+
+          <!-- User Guide -->
+          <el-tooltip content="User Guide">
+            <el-icon class="header-icon" size="20" @click="startGuide">
+              <QuestionFilled />
+            </el-icon>
+          </el-tooltip>
 
           <!-- User Dropdown -->
           <el-dropdown @command="handleCommand">
@@ -84,28 +99,46 @@
         </div>
       </el-header>
 
+      <!-- Tab Bar -->
+      <TabBar />
+
       <el-main class="main-content">
-        <router-view />
+        <router-view v-slot="{ Component, route }">
+          <keep-alive :include="cachedViews">
+            <component :is="Component" :key="route.path" />
+          </keep-alive>
+        </router-view>
       </el-main>
     </el-container>
+
+    <!-- User Guide -->
+    <UserGuide />
   </el-container>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useUserStore } from '@/stores/user'
 import { useThemeStore } from '@/stores/theme'
+import { useTabsStore } from '@/stores/tabs'
+import { useGuideStore } from '@/stores/guide'
 import { setLocale, type Locale } from '@/i18n'
+import TabBar from '@/components/TabBar.vue'
+import GlobalSearch from '@/components/GlobalSearch.vue'
+import FullscreenToggle from '@/components/FullscreenToggle.vue'
+import UserGuide from '@/components/UserGuide.vue'
 import {
-  Monitor, Fold, Expand, User, ArrowDown, Sunny, Moon, Guide
+  Monitor, Fold, Expand, User, ArrowDown, Sunny, Moon, Guide, QuestionFilled
 } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 const themeStore = useThemeStore()
+const tabsStore = useTabsStore()
+const guideStore = useGuideStore()
 const { locale, t } = useI18n()
 
 const isCollapsed = ref(false)
@@ -123,6 +156,21 @@ const currentRouteTitle = computed(() => {
   const menuKey = getMenuKey(route.path.replace('/', ''))
   return t(`menu.${menuKey}`) || (route.meta?.title as string) || ''
 })
+
+// Cached views for keep-alive
+const cachedViews = computed(() => {
+  return tabsStore.tabs.map(tab => tab.name).filter(Boolean)
+})
+
+// Watch route changes to add tabs
+watch(
+  () => route.path,
+  () => {
+    if (route.meta?.hidden) return
+    tabsStore.addTab(route)
+  },
+  { immediate: true }
+)
 
 // Map route paths to i18n menu keys
 function getMenuKey(path: string): string {
@@ -149,6 +197,13 @@ function handleCommand(command: string) {
   } else if (command === 'profile') {
     router.push('/settings')
   }
+}
+
+function startGuide() {
+  guideStore.resetGuide()
+  guideStore.startGuide()
+  // Force re-render of guide component
+  window.location.reload()
 }
 </script>
 

@@ -179,6 +179,27 @@ export default {
   header: {
     home: 'Home',
     profile: 'Profile',
-    logout: 'Logout'
+    logout: 'Logout',
+    fullscreen: 'Fullscreen',
+    exitFullscreen: 'Exit Fullscreen'
+  },
+  tabs: {
+    closeOther: 'Close Others',
+    closeRight: 'Close Right',
+    closeAll: 'Close All',
+    refresh: 'Refresh',
+    close: 'Close'
+  },
+  search: {
+    placeholder: 'Search pages...',
+    title: 'Quick Navigation',
+    inputPlaceholder: 'Type to search pages...',
+    noResults: 'No results found'
+  },
+  guide: {
+    skip: 'Skip',
+    prev: 'Previous',
+    next: 'Next',
+    finish: 'Finish'
   }
 }
