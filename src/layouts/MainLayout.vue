@@ -70,8 +70,7 @@ import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import {
-  Monitor, Fold, Expand, User, ArrowDown,
-  Odometer, Setting
+  Monitor, Fold, Expand, User, ArrowDown
 } from '@element-plus/icons-vue'
 
 const route = useRoute()
