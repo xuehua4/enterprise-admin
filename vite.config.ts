@@ -6,6 +6,7 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
+  base: process.env.GITHUB_PAGES ? '/enterprise-admin/' : '/',
   plugins: [
     vue(),
     AutoImport({
