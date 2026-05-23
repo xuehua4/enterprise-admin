@@ -20,7 +20,7 @@
           :index="'/' + route.path"
         >
           <el-icon><component :is="route.meta?.icon || 'Document'" /></el-icon>
-          <template #title>{{ route.meta?.title || route.name }}</template>
+          <template #title>{{ $t(`menu.${getMenuKey(route.path)}`) || route.meta?.title }}</template>
         </el-menu-item>
       </el-menu>
     </el-aside>
@@ -37,11 +37,37 @@
             <Expand v-else />
           </el-icon>
           <el-breadcrumb separator="/">
-            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/' }">{{ $t('header.home') }}</el-breadcrumb-item>
             <el-breadcrumb-item v-if="currentRouteTitle">{{ currentRouteTitle }}</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
         <div class="header-right">
+          <!-- Theme Toggle -->
+          <el-tooltip :content="themeStore.isDark ? 'Light Mode' : 'Dark Mode'">
+            <el-icon class="header-icon" size="20" @click="themeStore.toggleTheme">
+              <Sunny v-if="themeStore.isDark" />
+              <Moon v-else />
+            </el-icon>
+          </el-tooltip>
+
+          <!-- Language Switch -->
+          <el-dropdown trigger="click" @command="handleLanguageChange">
+            <el-icon class="header-icon" size="20">
+              <Guide />
+            </el-icon>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="zh-CN" :class="{ 'is-active': currentLocale === 'zh-CN' }">
+                  简体中文
+                </el-dropdown-item>
+                <el-dropdown-item command="en-US" :class="{ 'is-active': currentLocale === 'en-US' }">
+                  English
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+
+          <!-- User Dropdown -->
           <el-dropdown @command="handleCommand">
             <span class="user-info">
               <el-icon><User /></el-icon>
@@ -50,8 +76,8 @@
             </span>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item command="profile">个人中心</el-dropdown-item>
-                <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
+                <el-dropdown-item command="profile">{{ $t('header.profile') }}</el-dropdown-item>
+                <el-dropdown-item command="logout" divided>{{ $t('header.logout') }}</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -68,16 +94,23 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useUserStore } from '@/stores/user'
+import { useThemeStore } from '@/stores/theme'
+import { setLocale, type Locale } from '@/i18n'
 import {
-  Monitor, Fold, Expand, User, ArrowDown
+  Monitor, Fold, Expand, User, ArrowDown, Sunny, Moon, Guide
 } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
+const themeStore = useThemeStore()
+const { locale, t } = useI18n()
 
 const isCollapsed = ref(false)
+
+const currentLocale = computed(() => locale.value)
 
 const menuRoutes = computed(() => {
   const indexRoute = router.getRoutes().find(r => r.path === '/')
@@ -86,7 +119,28 @@ const menuRoutes = computed(() => {
 
 const activeMenu = computed(() => route.path)
 
-const currentRouteTitle = computed(() => route.meta?.title as string || '')
+const currentRouteTitle = computed(() => {
+  const menuKey = getMenuKey(route.path.replace('/', ''))
+  return t(`menu.${menuKey}`) || (route.meta?.title as string) || ''
+})
+
+// Map route paths to i18n menu keys
+function getMenuKey(path: string): string {
+  const keyMap: Record<string, string> = {
+    'dashboard': 'dashboard',
+    'user': 'userManagement',
+    'role': 'roleManagement',
+    'menu': 'menuManagement',
+    'log': 'systemLog',
+    'settings': 'systemSettings',
+    'about': 'about'
+  }
+  return keyMap[path] || ''
+}
+
+function handleLanguageChange(lang: Locale) {
+  setLocale(lang)
+}
 
 function handleCommand(command: string) {
   if (command === 'logout') {
@@ -134,8 +188,8 @@ function handleCommand(command: string) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #fff;
-  border-bottom: 1px solid #e6e6e6;
+  background: var(--header-bg, #fff);
+  border-bottom: 1px solid var(--header-border, #e6e6e6);
   padding: 0 20px;
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
 }
@@ -148,13 +202,20 @@ function handleCommand(command: string) {
 
 .collapse-btn {
   cursor: pointer;
-  color: #606266;
+  color: var(--text-color-secondary, #606266);
   &:hover { color: #409EFF; }
 }
 
 .header-right {
   display: flex;
   align-items: center;
+  gap: 16px;
+}
+
+.header-icon {
+  cursor: pointer;
+  color: var(--text-color-secondary, #606266);
+  &:hover { color: #409EFF; }
 }
 
 .user-info {
@@ -162,13 +223,18 @@ function handleCommand(command: string) {
   align-items: center;
   gap: 6px;
   cursor: pointer;
-  color: #606266;
+  color: var(--text-color-secondary, #606266);
   &:hover { color: #409EFF; }
 }
 
 .main-content {
-  background-color: #f0f2f5;
+  background-color: var(--bg-color, #f0f2f5);
   min-height: 0;
   overflow-y: auto;
+}
+
+:deep(.el-dropdown-menu__item.is-active) {
+  color: #409EFF;
+  background-color: #ecf5ff;
 }
 </style>

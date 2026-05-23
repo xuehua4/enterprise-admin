@@ -9,10 +9,45 @@ html, body, #app {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
-// Element Plus overrides
+// CSS Variables - Light Theme (default)
+:root {
+  --bg-color: #f0f2f5;
+  --bg-color-secondary: #ffffff;
+  --text-color: #303133;
+  --text-color-secondary: #606266;
+  --border-color: #e6e6e6;
+  --header-bg: #ffffff;
+  --header-border: #e6e6e6;
+  --sidebar-bg: #304156;
+  --sidebar-text: #bfcbd9;
+  --card-bg: #ffffff;
+  --card-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  --hover-bg: #f5f7fa;
+}
+
+// Dark Theme
+html.dark, [data-theme="dark"] {
+  --bg-color: #141414;
+  --bg-color-secondary: #1f1f1f;
+  --text-color: #e5eaf3;
+  --text-color-secondary: #a3a6ad;
+  --border-color: #414243;
+  --header-bg: #1f1f1f;
+  --header-border: #414243;
+  --sidebar-bg: #1f1f1f;
+  --sidebar-text: #a3a6ad;
+  --card-bg: #1f1f1f;
+  --card-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.5);
+  --hover-bg: #2a2a2a;
+}
+
+// Element Plus overrides - Light
 .el-card {
   border-radius: 8px;
   border: none;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  box-shadow: var(--card-shadow);
 }
 
 .el-button {
@@ -21,6 +56,156 @@ html, body, #app {
 
 .el-input__wrapper {
   border-radius: 6px;
+}
+
+// Dark theme Element Plus overrides
+html.dark, [data-theme="dark"] {
+  .el-card {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+  }
+
+  .el-table {
+    --el-table-bg-color: var(--card-bg);
+    --el-table-tr-bg-color: var(--card-bg);
+    --el-table-header-bg-color: #2a2a2a;
+    --el-table-row-hover-bg-color: var(--hover-bg);
+    --el-table-text-color: var(--text-color);
+    --el-table-header-text-color: var(--text-color);
+    --el-table-border-color: var(--border-color);
+  }
+
+  .el-form-item__label {
+    color: var(--text-color);
+  }
+
+  .el-input__wrapper {
+    background-color: #2a2a2a;
+    box-shadow: 0 0 0 1px var(--border-color) inset;
+  }
+
+  .el-input__inner {
+    color: var(--text-color);
+  }
+
+  .el-select__wrapper {
+    background-color: #2a2a2a;
+    box-shadow: 0 0 0 1px var(--border-color) inset;
+  }
+
+  .el-dialog {
+    background-color: var(--card-bg);
+  }
+
+  .el-dialog__title {
+    color: var(--text-color);
+  }
+
+  .el-dialog__body {
+    color: var(--text-color);
+  }
+
+  .el-descriptions__label {
+    color: var(--text-color);
+    background-color: #2a2a2a;
+  }
+
+  .el-descriptions__content {
+    color: var(--text-color);
+    background-color: var(--card-bg);
+  }
+
+  .el-menu {
+    background-color: var(--sidebar-bg);
+  }
+
+  .el-popper.is-dark {
+    background-color: #2a2a2a;
+    color: var(--text-color);
+  }
+
+  .el-date-picker {
+    background-color: var(--card-bg);
+  }
+
+  .el-picker-panel {
+    background-color: var(--card-bg);
+  }
+
+  .el-pagination {
+    --el-pagination-bg-color: var(--card-bg);
+    --el-pagination-text-color: var(--text-color);
+    --el-pagination-button-bg-color: var(--card-bg);
+  }
+
+  .el-alert {
+    background-color: #2a2a2a;
+  }
+
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+  }
+
+  .main-content {
+    background-color: var(--bg-color);
+  }
+
+  .header {
+    background: var(--header-bg);
+    border-bottom-color: var(--header-border);
+  }
+
+  .collapse-btn {
+    color: var(--text-color-secondary);
+
+    &:hover {
+      color: #409EFF;
+    }
+  }
+
+  .user-info {
+    color: var(--text-color-secondary);
+
+    &:hover {
+      color: #409EFF;
+    }
+  }
+
+  .el-breadcrumb__item__inner {
+    color: var(--text-color-secondary);
+  }
+
+  .el-breadcrumb__separator {
+    color: var(--text-color-secondary);
+  }
+
+  // Login page adjustments
+  .login-tip {
+    color: var(--text-color-secondary);
+  }
+
+  // Dashboard adjustments
+  .stat-value {
+    color: var(--text-color);
+  }
+
+  .stat-title {
+    color: var(--text-color-secondary);
+  }
+
+  // About page adjustments
+  .app-name {
+    color: var(--text-color);
+  }
+
+  .description {
+    color: var(--text-color-secondary);
+  }
+
+  .feature-card p {
+    color: var(--text-color-secondary);
+  }
 }
 
 // Scrollbar
@@ -38,6 +223,14 @@ html, body, #app {
   background: #f2f6fc;
 }
 
+html.dark ::-webkit-scrollbar-thumb {
+  background: #5c5c5c;
+}
+
+html.dark ::-webkit-scrollbar-track {
+  background: #2a2a2a;
+}
+
 // Utility classes
 .page-container {
   padding: 20px;
@@ -47,4 +240,16 @@ html, body, #app {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+// Permission disabled style
+.permission-disabled {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}
+
+// Transition
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }

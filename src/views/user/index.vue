@@ -3,50 +3,50 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <span>用户管理</span>
-          <el-button type="primary" :icon="Plus" size="small">新增用户</el-button>
+          <span>{{ $t('user.title') }}</span>
+          <el-button type="primary" :icon="Plus" size="small">{{ $t('user.addUser') }}</el-button>
         </div>
       </template>
 
       <el-form :inline="true" class="search-form">
-        <el-form-item label="关键词">
-          <el-input v-model="searchKeyword" placeholder="用户名/姓名" clearable />
+        <el-form-item :label="$t('user.keyword')">
+          <el-input v-model="searchKeyword" :placeholder="$t('user.keywordPlaceholder')" clearable />
         </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="searchStatus" placeholder="全部" clearable style="width: 120px">
-            <el-option label="启用" value="active" />
-            <el-option label="禁用" value="disabled" />
+        <el-form-item :label="$t('user.status')">
+          <el-select v-model="searchStatus" :placeholder="$t('user.allStatus')" clearable style="width: 120px">
+            <el-option :label="$t('user.active')" value="active" />
+            <el-option :label="$t('user.disabled')" value="disabled" />
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" :icon="Search">搜索</el-button>
-          <el-button :icon="Refresh">重置</el-button>
+          <el-button type="primary" :icon="Search">{{ $t('common.search') }}</el-button>
+          <el-button :icon="Refresh">{{ $t('common.reset') }}</el-button>
         </el-form-item>
       </el-form>
 
       <el-table :data="tableData" stripe border style="width: 100%">
         <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="username" label="用户名" width="120" />
-        <el-table-column prop="name" label="姓名" width="120" />
-        <el-table-column prop="email" label="邮箱" />
-        <el-table-column prop="role" label="角色" width="100">
+        <el-table-column prop="username" :label="$t('user.username')" width="120" />
+        <el-table-column prop="name" :label="$t('user.name')" width="120" />
+        <el-table-column prop="email" :label="$t('user.email')" />
+        <el-table-column :label="$t('user.role')" width="100">
           <template #default="{ row }">
-            <el-tag :type="row.role === 'admin' ? 'danger' : 'info'">{{ row.role }}</el-tag>
+            <el-tag :type="row.role === 'admin' ? 'danger' : 'info'">{{ getRoleLabel(row.role) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="status" label="状态" width="80">
+        <el-table-column :label="$t('user.status')" width="80">
           <template #default="{ row }">
             <el-tag :type="row.status === 'active' ? 'success' : 'warning'">
-              {{ row.status === 'active' ? '启用' : '禁用' }}
+              {{ row.status === 'active' ? $t('user.active') : $t('user.disabled') }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="createdAt" label="创建时间" width="180" />
-        <el-table-column label="操作" width="180" fixed="right">
+        <el-table-column prop="createdAt" :label="$t('user.createdAt')" width="180" />
+        <el-table-column :label="$t('common.edit')" width="180" fixed="right">
           <template #default>
-            <el-button type="primary" link size="small">编辑</el-button>
-            <el-button type="warning" link size="small">重置密码</el-button>
-            <el-button type="danger" link size="small">删除</el-button>
+            <el-button type="primary" link size="small">{{ $t('user.edit') }}</el-button>
+            <el-button type="warning" link size="small">{{ $t('user.resetPassword') }}</el-button>
+            <el-button type="danger" link size="small">{{ $t('user.delete') }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -66,7 +66,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { Plus, Search, Refresh } from '@element-plus/icons-vue'
+
+const { t } = useI18n()
 
 const searchKeyword = ref('')
 const searchStatus = ref('')
@@ -80,6 +83,15 @@ const tableData = ref([
   { id: 4, username: 'wangwu', name: '王五', email: 'wangwu@enterprise.com', role: 'editor', status: 'disabled', createdAt: '2026-04-10 09:15:00' },
   { id: 5, username: 'zhaoliu', name: '赵六', email: 'zhaoliu@enterprise.com', role: 'user', status: 'active', createdAt: '2026-05-01 16:45:00' }
 ])
+
+function getRoleLabel(role: string): string {
+  const labels: Record<string, string> = {
+    admin: t('user.admin'),
+    user: t('user.user'),
+    editor: t('user.editor')
+  }
+  return labels[role] || role
+}
 </script>
 
 <style scoped lang="scss">

@@ -2,8 +2,8 @@
   <div class="error-page">
     <div class="error-content">
       <h1 class="error-code">404</h1>
-      <p class="error-message">抱歉，您访问的页面不存在</p>
-      <el-button type="primary" @click="$router.push('/')">返回首页</el-button>
+      <p class="error-message">{{ $t('common.noData') }}</p>
+      <el-button type="primary" @click="$router.push('/')">{{ $t('common.back') }}</el-button>
     </div>
   </div>
 </template>
@@ -17,7 +17,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f0f2f5;
+  background: var(--bg-color, #f0f2f5);
 }
 
 .error-content {
@@ -34,7 +34,7 @@
 
 .error-message {
   font-size: 18px;
-  color: #909399;
+  color: var(--text-color-secondary, #909399);
   margin: 20px 0 30px;
 }
 </style>

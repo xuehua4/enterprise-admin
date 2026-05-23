@@ -6,6 +6,8 @@ import 'element-plus/dist/index.css'
 
 import App from './App.vue'
 import router from './router'
+import { i18n } from './i18n'
+import { setupPermissionDirectives } from './directives/permission'
 import '@/styles/index.scss'
 
 const app = createApp(App)
@@ -15,8 +17,19 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
 
+// Setup Pinia
 app.use(createPinia())
+
+// Setup Router
 app.use(router)
-app.use(ElementPlus, { locale: undefined }) // Use default locale
+
+// Setup i18n
+app.use(i18n)
+
+// Setup Element Plus
+app.use(ElementPlus)
+
+// Setup permission directives
+setupPermissionDirectives(app)
 
 app.mount('#app')

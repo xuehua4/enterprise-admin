@@ -2,12 +2,12 @@
   <div class="dashboard">
     <!-- Stats Cards -->
     <el-row :gutter="20" class="stat-cards">
-      <el-col :xs="24" :sm="12" :lg="6" v-for="card in statCards" :key="card.title">
+      <el-col :xs="24" :sm="12" :lg="6" v-for="card in statCards" :key="card.titleKey">
         <el-card shadow="hover" class="stat-card">
           <div class="stat-card-content">
             <div class="stat-info">
               <div class="stat-value">{{ card.value }}</div>
-              <div class="stat-title">{{ card.title }}</div>
+              <div class="stat-title">{{ $t(`dashboard.${card.titleKey}`) }}</div>
             </div>
             <el-icon :size="48" :style="{ color: card.color }">
               <component :is="card.icon" />
@@ -20,12 +20,12 @@
     <!-- Charts Row -->
     <el-row :gutter="20" style="margin-top: 20px">
       <el-col :xs="24" :lg="16">
-        <el-card header="访问趋势（近7天）">
+        <el-card :header="$t('dashboard.visitTrend')">
           <v-chart :option="lineChartOption" autoresize style="height: 300px" />
         </el-card>
       </el-col>
       <el-col :xs="24" :lg="8">
-        <el-card header="流量来源">
+        <el-card :header="$t('dashboard.trafficSource')">
           <v-chart :option="pieChartOption" autoresize style="height: 300px" />
         </el-card>
       </el-col>
@@ -34,23 +34,23 @@
     <!-- Bottom Row -->
     <el-row :gutter="20" style="margin-top: 20px">
       <el-col :xs="24" :lg="12">
-        <el-card header="访问量柱状图">
+        <el-card :header="$t('dashboard.pageViews')">
           <v-chart :option="barChartOption" autoresize style="height: 300px" />
         </el-card>
       </el-col>
       <el-col :xs="24" :lg="12">
-        <el-card header="系统信息">
+        <el-card :header="$t('dashboard.systemInfo')">
           <el-descriptions :column="1" border size="small">
-            <el-descriptions-item label="系统版本">v1.0.0</el-descriptions-item>
-            <el-descriptions-item label="Vue 版本">3.5.x</el-descriptions-item>
-            <el-descriptions-item label="UI 框架">Element Plus 2.14</el-descriptions-item>
-            <el-descriptions-item label="构建工具">Vite 8.0</el-descriptions-item>
-            <el-descriptions-item label="图表库">ECharts 6.1</el-descriptions-item>
-            <el-descriptions-item label="状态管理">Pinia 3.0</el-descriptions-item>
+            <el-descriptions-item :label="$t('dashboard.version')">v1.0.0</el-descriptions-item>
+            <el-descriptions-item :label="$t('dashboard.vueVersion')">3.5.x</el-descriptions-item>
+            <el-descriptions-item :label="$t('dashboard.uiFramework')">Element Plus 2.14</el-descriptions-item>
+            <el-descriptions-item :label="$t('dashboard.buildTool')">Vite 8.0</el-descriptions-item>
+            <el-descriptions-item :label="$t('dashboard.chartLib')">ECharts 6.1</el-descriptions-item>
+            <el-descriptions-item :label="$t('dashboard.stateManagement')">Pinia 3.0</el-descriptions-item>
           </el-descriptions>
           <div class="quick-actions" style="margin-top: 20px">
-            <el-button type="primary" :icon="User" @click="$router.push('/user')">用户管理</el-button>
-            <el-button type="success" :icon="Setting" @click="$router.push('/settings')">系统设置</el-button>
+            <el-button type="primary" :icon="User" @click="$router.push('/user')">{{ $t('menu.userManagement') }}</el-button>
+            <el-button type="success" :icon="Setting" @click="$router.push('/settings')">{{ $t('menu.systemSettings') }}</el-button>
           </div>
         </el-card>
       </el-col>
@@ -59,8 +59,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
 import { LineChart, PieChart, BarChart } from 'echarts/charts'
@@ -85,23 +85,23 @@ use([
   GridComponent
 ])
 
-const router = useRouter()
+const { t } = useI18n()
 
 // Stats cards data
 const statCards = ref([
-  { title: '用户总数', value: '1,284', icon: UserFilled, color: '#409EFF' },
-  { title: '今日访问', value: '856', icon: TrendCharts, color: '#67C23A' },
-  { title: '文档数量', value: '320', icon: Document, color: '#E6A23C' },
-  { title: '消息通知', value: '18', icon: ChatDotRound, color: '#F56C6C' }
+  { titleKey: 'userTotal', value: '1,284', icon: UserFilled, color: '#409EFF' },
+  { titleKey: 'todayVisits', value: '856', icon: TrendCharts, color: '#67C23A' },
+  { titleKey: 'documentCount', value: '320', icon: Document, color: '#E6A23C' },
+  { titleKey: 'messageNotify', value: '18', icon: ChatDotRound, color: '#F56C6C' }
 ])
 
 // Line chart - visits trend
-const lineChartOption = ref({
+const lineChartOption = computed(() => ({
   tooltip: {
     trigger: 'axis'
   },
   legend: {
-    data: ['访问量', '用户数'],
+    data: [t('dashboard.visits'), t('dashboard.users')],
     bottom: 0
   },
   grid: {
@@ -121,7 +121,7 @@ const lineChartOption = ref({
   },
   series: [
     {
-      name: '访问量',
+      name: t('dashboard.visits'),
       type: 'line',
       smooth: true,
       areaStyle: { opacity: 0.3 },
@@ -129,7 +129,7 @@ const lineChartOption = ref({
       itemStyle: { color: '#409EFF' }
     },
     {
-      name: '用户数',
+      name: t('dashboard.users'),
       type: 'line',
       smooth: true,
       areaStyle: { opacity: 0.3 },
@@ -137,10 +137,10 @@ const lineChartOption = ref({
       itemStyle: { color: '#67C23A' }
     }
   ]
-})
+}))
 
 // Pie chart - traffic source
-const pieChartOption = ref({
+const pieChartOption = computed(() => ({
   tooltip: {
     trigger: 'item'
   },
@@ -163,18 +163,18 @@ const pieChartOption = ref({
         formatter: '{b}: {d}%'
       },
       data: [
-        { value: 1048, name: '直接访问', itemStyle: { color: '#409EFF' } },
-        { value: 735, name: '搜索引擎', itemStyle: { color: '#67C23A' } },
-        { value: 580, name: '邮件营销', itemStyle: { color: '#E6A23C' } },
-        { value: 484, name: '社交平台', itemStyle: { color: '#F56C6C' } },
-        { value: 300, name: '外部链接', itemStyle: { color: '#909399' } }
+        { value: 1048, name: t('dashboard.directAccess'), itemStyle: { color: '#409EFF' } },
+        { value: 735, name: t('dashboard.searchEngine'), itemStyle: { color: '#67C23A' } },
+        { value: 580, name: t('dashboard.emailMarketing'), itemStyle: { color: '#E6A23C' } },
+        { value: 484, name: t('dashboard.socialPlatform'), itemStyle: { color: '#F56C6C' } },
+        { value: 300, name: t('dashboard.externalLink'), itemStyle: { color: '#909399' } }
       ]
     }
   ]
-})
+}))
 
 // Bar chart - page views
-const barChartOption = ref({
+const barChartOption = computed(() => ({
   tooltip: {
     trigger: 'axis'
   },
@@ -187,7 +187,14 @@ const barChartOption = ref({
   },
   xAxis: {
     type: 'category',
-    data: ['首页', '仪表盘', '用户管理', '系统设置', '登录页', '404页']
+    data: [
+      t('dashboard.homePage'),
+      t('dashboard.dashboardPage'),
+      t('dashboard.userPage'),
+      t('dashboard.settingsPage'),
+      t('dashboard.loginPage'),
+      t('dashboard.notFoundPage')
+    ]
   },
   yAxis: {
     type: 'value'
@@ -206,7 +213,7 @@ const barChartOption = ref({
       ]
     }
   ]
-})
+}))
 </script>
 
 <style scoped lang="scss">
@@ -228,12 +235,12 @@ const barChartOption = ref({
   .stat-value {
     font-size: 28px;
     font-weight: bold;
-    color: #303133;
+    color: var(--text-color, #303133);
   }
 
   .stat-title {
     font-size: 14px;
-    color: #909399;
+    color: var(--text-color-secondary, #909399);
     margin-top: 4px;
   }
 }
