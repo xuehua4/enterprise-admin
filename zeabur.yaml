@@ -1,0 +1,13 @@
+type: prebuilt
+
+build:
+  type: nodejs:18
+
+  command:
+    - pnpm install
+    - pnpm build
+
+  output: dist
+
+run:
+  type: static
