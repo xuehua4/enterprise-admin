@@ -1,7 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+const base = import.meta.env.BASE_URL || '/'
+
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(base),
   routes: [
     {
       path: '/login',
