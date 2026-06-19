@@ -29,7 +29,9 @@
         <div class="login-header">
           <div class="logo">
             <div class="logo-icon">
-              <el-icon :size="36"><Monitor /></el-icon>
+              <el-icon :size="36">
+                <Monitor />
+              </el-icon>
             </div>
           </div>
           <h1 class="title">{{ $t('login.title') }}</h1>
@@ -37,31 +39,14 @@
         </div>
 
         <!-- Form -->
-        <el-form
-          ref="formRef"
-          :model="form"
-          :rules="rules"
-          class="login-form"
-          size="large"
-          @keyup.enter="handleLogin"
-        >
+        <el-form ref="formRef" :model="form" :rules="rules" class="login-form" size="large" @keyup.enter="handleLogin">
           <el-form-item prop="username">
-            <el-input
-              v-model="form.username"
-              :placeholder="$t('login.username')"
-              :prefix-icon="User"
-              class="custom-input"
-            />
+            <el-input v-model="form.username" :placeholder="$t('login.username')" :prefix-icon="User"
+              class="custom-input" />
           </el-form-item>
           <el-form-item prop="password">
-            <el-input
-              v-model="form.password"
-              type="password"
-              :placeholder="$t('login.password')"
-              show-password
-              :prefix-icon="Lock"
-              class="custom-input"
-            />
+            <el-input v-model="form.password" type="password" :placeholder="$t('login.password')" show-password
+              :prefix-icon="Lock" class="custom-input" />
           </el-form-item>
           <el-form-item>
             <div class="form-options">
@@ -69,12 +54,7 @@
             </div>
           </el-form-item>
           <el-form-item>
-            <el-button
-              type="primary"
-              class="login-btn"
-              :loading="loading"
-              @click="handleLogin"
-            >
+            <el-button type="primary" class="login-btn" :loading="loading" @click="handleLogin">
               {{ $t('login.loginBtn') }}
             </el-button>
           </el-form-item>
@@ -101,6 +81,7 @@ import { ElMessage, type FormInstance } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { User, Lock, Monitor } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
+import { setLocale, type Locale } from '@/i18n'
 
 const router = useRouter()
 const route = useRoute()
@@ -112,9 +93,36 @@ const loading = ref(false)
 const rememberMe = ref(false)
 
 const form = reactive({
-  username: 'admin',
-  password: 'admin123'
+  username: '',
+  password: ''
 })
+
+// ==================== 记住我：初始化时从localStorage读取 ====================
+const SAVED_USER_KEY = 'enterprise_admin_remember'
+
+/** 初始化表单：如果之前选择了"记住我"，则恢复用户名密码 */
+function initForm() {
+  const saved = localStorage.getItem(SAVED_USER_KEY)
+  if (saved) {
+    try {
+      const data = JSON.parse(saved)
+      form.username = data.username || ''
+      form.password = data.password || ''
+      rememberMe.value = true
+    } catch {
+      // 解析失败则使用默认值
+      form.username = 'admin'
+      form.password = 'admin123'
+    }
+  } else {
+    // 未保存过，使用默认值
+    form.username = 'admin'
+    form.password = 'admin123'
+  }
+}
+
+// 页面加载时初始化
+initForm()
 
 const rules = {
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
@@ -122,14 +130,24 @@ const rules = {
 }
 
 function handleLangChange(lang: string) {
-  locale.value = lang
-  localStorage.setItem('lang', lang)
+  setLocale(lang as Locale)
 }
 
 async function handleLogin() {
   if (!formRef.value) return
   await formRef.value.validate()
-  
+
+  // 如果勾选了"记住我"，将用户名密码存入localStorage
+  if (rememberMe.value) {
+    localStorage.setItem(SAVED_USER_KEY, JSON.stringify({
+      username: form.username,
+      password: form.password
+    }))
+  } else {
+    // 未勾选则清除已保存的信息
+    localStorage.removeItem(SAVED_USER_KEY)
+  }
+
   loading.value = true
   try {
     await userStore.login(form.username, form.password)
@@ -199,15 +217,20 @@ async function handleLogin() {
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translate(0, 0) scale(1);
   }
+
   25% {
     transform: translate(30px, -30px) scale(1.05);
   }
+
   50% {
     transform: translate(-20px, 20px) scale(0.95);
   }
+
   75% {
     transform: translate(15px, 15px) scale(1.02);
   }
@@ -250,6 +273,7 @@ async function handleLogin() {
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -293,9 +317,12 @@ async function handleLogin() {
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
   }
+
   50% {
     box-shadow: 0 10px 40px rgba(102, 126, 234, 0.6);
   }

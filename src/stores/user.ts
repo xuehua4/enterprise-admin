@@ -59,4 +59,10 @@ export const useUserStore = defineStore('user', () => {
     setToken,
     setUserInfo
   }
+}, {
+  /** Pinia 持久化配置：刷新页面后保留用户信息 */
+  persist: {
+    key: 'enterprise_admin_user',
+    pick: ['token', 'userInfo']
+  }
 })

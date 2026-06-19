@@ -15,7 +15,10 @@ export default {
     error: 'Operation failed',
     loading: 'Loading...',
     noData: 'No data',
-    tip: 'Tip'
+    tip: 'Tip',
+    yes: 'Yes',
+    no: 'No',
+    to: 'To'
   },
   menu: {
     dashboard: 'Dashboard',
@@ -113,9 +116,11 @@ export default {
     visible: 'Visible',
     permission: 'Permission',
     parentMenu: 'Parent Menu',
+    selectParent: 'Select parent menu (optional)',
     edit: 'Edit',
     delete: 'Delete',
-    dragTip: 'Drag to reorder'
+    dragTip: 'Drag to reorder',
+    deleteConfirm: 'Are you sure you want to delete this menu?'
   },
   log: {
     title: 'System Log',
@@ -135,7 +140,11 @@ export default {
     create: 'Create',
     update: 'Update',
     delete: 'Delete',
-    query: 'Query'
+    query: 'Query',
+    startDate: 'Start Date',
+    endDate: 'End Date',
+    clearConfirm: 'Are you sure you want to clear all logs? This cannot be undone!',
+    clearSuccess: 'All logs have been cleared'
   },
   settings: {
     title: 'System Settings',

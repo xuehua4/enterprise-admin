@@ -15,7 +15,10 @@ export default {
     error: '操作失败',
     loading: '加载中...',
     noData: '暂无数据',
-    tip: '提示'
+    tip: '提示',
+    yes: '是',
+    no: '否',
+    to: '至'
   },
   menu: {
     dashboard: '仪表盘',
@@ -113,9 +116,11 @@ export default {
     visible: '是否显示',
     permission: '权限标识',
     parentMenu: '上级菜单',
+    selectParent: '请选择上级菜单（可选）',
     edit: '编辑',
     delete: '删除',
-    dragTip: '拖拽调整排序'
+    dragTip: '拖拽调整排序',
+    deleteConfirm: '确定要删除菜单'
   },
   log: {
     title: '系统日志',
@@ -135,7 +140,11 @@ export default {
     create: '新增',
     update: '修改',
     delete: '删除',
-    query: '查询'
+    query: '查询',
+    startDate: '开始日期',
+    endDate: '结束日期',
+    clearConfirm: '确定要清空所有日志吗？此操作不可恢复！',
+    clearSuccess: '日志已全部清空'
   },
   settings: {
     title: '系统设置',

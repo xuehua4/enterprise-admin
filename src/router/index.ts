@@ -76,16 +76,19 @@ const router = createRouter({
   ]
 })
 
-// Navigation guard
-router.beforeEach((to, _from, next) => {
+/**
+ * 全局前置导航守卫
+ * - 设置页面标题
+ * - 未登录用户重定向到登录页（返回值方式，兼容 Vue Router 4.x+）
+ */
+router.beforeEach((to) => {
   document.title = `${to.meta.title || 'Management System'} - Enterprise Admin`
-  
+
   const token = localStorage.getItem('token')
   if (to.meta.requiresAuth !== false && !token) {
-    next({ path: '/login', query: { redirect: to.fullPath } })
-  } else {
-    next()
+    return { path: '/login', query: { redirect: to.fullPath } }
   }
+  return true
 })
 
 export default router

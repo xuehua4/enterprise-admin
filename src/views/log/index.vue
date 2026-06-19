@@ -1,21 +1,22 @@
 <template>
   <div class="log-page">
     <el-card>
+      <!-- 卡片头部：标题 + 操作按钮 -->
       <template #header>
         <div class="card-header">
           <span>{{ $t('log.title') }}</span>
           <div>
-            <el-button type="warning" :icon="Download" size="small">
+            <el-button type="warning" :icon="Download" size="small" @click="handleExport">
               {{ $t('log.export') }}
             </el-button>
-            <el-button type="danger" :icon="Delete" size="small" style="margin-left: 8px;">
+            <el-button type="danger" :icon="Delete" size="small" style="margin-left: 8px;" @click="handleClearAll">
               {{ $t('log.clearAll') }}
             </el-button>
           </div>
         </div>
       </template>
 
-      <!-- Filters -->
+      <!-- 筛选表单 -->
       <el-form :inline="true" class="search-form">
         <el-form-item :label="$t('log.operator')">
           <el-input v-model="filter.operator" :placeholder="$t('log.operator')" clearable />
@@ -37,23 +38,17 @@
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('log.time')">
-          <el-date-picker
-            v-model="filter.dateRange"
-            type="daterange"
-            range-separator="-"
-            start-placeholder="Start"
-            end-placeholder="End"
-            style="width: 240px"
-          />
+          <el-date-picker v-model="filter.dateRange" type="daterange" :range-separator="$t('common.to') || '-'"
+            :start-placeholder="$t('log.startDate')" :end-placeholder="$t('log.endDate')" style="width: 240px" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" :icon="Search">{{ $t('common.search') }}</el-button>
-          <el-button :icon="Refresh">{{ $t('common.reset') }}</el-button>
+          <el-button type="primary" :icon="Search" @click="handleSearch">{{ $t('common.search') }}</el-button>
+          <el-button :icon="Refresh" @click="handleReset">{{ $t('common.reset') }}</el-button>
         </el-form-item>
       </el-form>
 
-      <!-- Log Table -->
-      <el-table :data="filteredLogs" stripe border style="width: 100%">
+      <!-- 日志数据表格 -->
+      <el-table :data="pagedLogs" stripe border style="width: 100%">
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="operator" :label="$t('log.operator')" width="120" />
         <el-table-column :label="$t('log.operation')" width="100">
@@ -76,30 +71,32 @@
         <el-table-column prop="time" :label="$t('log.time')" width="180" />
       </el-table>
 
-      <!-- Pagination -->
+      <!-- 分页器 -->
       <div class="pagination-wrapper">
-        <el-pagination
-          v-model:current-page="currentPage"
-          v-model:page-size="pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          :total="totalLogs"
-          layout="total, sizes, prev, pager, next, jumper"
-        />
+        <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize" :page-sizes="[10, 20, 50, 100]"
+          :total="filteredLogs.length" layout="total, sizes, prev, pager, next, jumper" />
       </div>
     </el-card>
   </div>
 </template>
 
 <script setup lang="ts">
+/**
+ * 系统日志页面
+ * 功能：日志列表展示、多条件筛选、分页、导出（模拟）、清空（带确认）
+ */
 import { ref, reactive, computed } from 'vue'
-import { Search, Refresh, Download, Delete } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { Search, Refresh, Download, Delete } from '@element-plus/icons-vue'
 
 const { t } = useI18n()
 
+// ==================== 分页相关 ====================
 const currentPage = ref(1)
 const pageSize = ref(10)
 
+// ==================== 筛选条件 ====================
 const filter = reactive({
   operator: '',
   operation: '',
@@ -107,6 +104,7 @@ const filter = reactive({
   dateRange: null as [Date, Date] | null
 })
 
+// ==================== 日志数据类型定义 ====================
 interface LogEntry {
   id: number
   operator: string
@@ -118,6 +116,7 @@ interface LogEntry {
   time: string
 }
 
+// ==================== Mock 日志数据 ====================
 const logs = ref<LogEntry[]>([
   { id: 1, operator: 'admin', operation: 'login', module: 'Auth', detail: '用户 admin 登录系统', ip: '192.168.1.100', status: 'success', time: '2026-05-23 15:30:00' },
   { id: 2, operator: 'admin', operation: 'query', module: 'User', detail: '查询用户列表', ip: '192.168.1.100', status: 'success', time: '2026-05-23 15:25:00' },
@@ -133,9 +132,11 @@ const logs = ref<LogEntry[]>([
   { id: 12, operator: 'admin', operation: 'delete', module: 'Menu', detail: '删除菜单项 test', ip: '192.168.1.100', status: 'failed', time: '2026-05-23 14:35:00' }
 ])
 
+// ==================== 计算属性：过滤 + 分页 ====================
+/** 根据筛选条件过滤日志 */
 const filteredLogs = computed(() => {
   let result = [...logs.value]
-  
+
   if (filter.operator) {
     result = result.filter(log => log.operator.toLowerCase().includes(filter.operator.toLowerCase()))
   }
@@ -145,12 +146,28 @@ const filteredLogs = computed(() => {
   if (filter.status) {
     result = result.filter(log => log.status === filter.status)
   }
-  
-  return result.slice((currentPage.value - 1) * pageSize.value, currentPage.value * pageSize.value)
+  // 日期范围筛选
+  if (filter.dateRange && filter.dateRange.length === 2) {
+    const [startDate, endDate] = filter.dateRange
+    const start = new Date(startDate).setHours(0, 0, 0, 0)
+    const end = new Date(endDate).setHours(23, 59, 59, 999)
+    result = result.filter(log => {
+      const logTime = new Date(log.time).getTime()
+      return logTime >= start && logTime <= end
+    })
+  }
+
+  return result
 })
 
-const totalLogs = computed(() => logs.value.length)
+/** 当前页显示的分页日志 */
+const pagedLogs = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value
+  return filteredLogs.value.slice(start, start + pageSize.value)
+})
 
+// ==================== 辅助方法 ====================
+/** 获取操作类型的标签样式 */
 function getOperationType(operation: string): 'success' | 'warning' | 'danger' | 'info' {
   const types: Record<string, 'success' | 'warning' | 'danger' | 'info'> = {
     login: 'success',
@@ -163,6 +180,7 @@ function getOperationType(operation: string): 'success' | 'warning' | 'danger' |
   return types[operation] || 'info'
 }
 
+/** 获取操作类型的国际化标签文本 */
 function getOperationLabel(operation: string): string {
   const labels: Record<string, string> = {
     login: t('log.login'),
@@ -173,6 +191,60 @@ function getOperationLabel(operation: string): string {
     query: t('log.query')
   }
   return labels[operation] || operation
+}
+
+// ==================== 操作方法 ====================
+/** 执行搜索（重置到第一页） */
+function handleSearch() {
+  currentPage.value = 1
+}
+
+/** 重置所有筛选条件 */
+function handleReset() {
+  filter.operator = ''
+  filter.operation = ''
+  filter.status = ''
+  filter.dateRange = null
+  currentPage.value = 1
+}
+
+/** 导出日志（模拟下载CSV） */
+function handleExport() {
+  const exportData = filteredLogs.value.length > 0 ? filteredLogs.value : logs.value
+
+  // 构造CSV内容
+  const headers = ['ID', t('log.operator'), t('log.operation'), t('log.module'), t('log.detail'), t('log.ip'), t('log.status'), t('log.time')]
+  const rows = exportData.map(log => [
+    log.id, log.operator, log.operation, log.module, log.detail, log.ip, log.status, log.time
+  ])
+  const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n')
+
+  // 触发下载
+  const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
+  const link = document.createElement('a')
+  link.href = URL.createObjectURL(blob)
+  link.download = `system_logs_${new Date().toISOString().slice(0, 10)}.csv`
+  link.click()
+  URL.revokeObjectURL(link.href)
+
+  ElMessage.success(`已导出 ${exportData.length} 条日志`)
+}
+
+/** 清空所有日志（带二次确认） */
+function handleClearAll() {
+  ElMessageBox.confirm(
+    t('log.clearConfirm') || '确定要清空所有日志吗？此操作不可恢复！',
+    t('common.tip'),
+    {
+      confirmButtonText: t('common.confirm'),
+      cancelButtonText: t('common.cancel'),
+      type: 'warning',
+      confirmButtonClass: 'el-button--danger'
+    }
+  ).then(() => {
+    logs.value = []
+    ElMessage.success(t('log.clearSuccess') || '日志已全部清空')
+  }).catch(() => { })
 }
 </script>
 

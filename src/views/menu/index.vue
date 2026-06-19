@@ -14,13 +14,8 @@
 
       <el-alert :title="$t('menuMgmt.dragTip')" type="info" :closable="false" style="margin-bottom: 16px;" />
 
-      <el-table
-        :data="menuTree"
-        row-key="id"
-        border
-        default-expand-all
-        :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-      >
+      <el-table :data="menuTree" row-key="id" border default-expand-all
+        :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
         <el-table-column prop="name" :label="$t('menuMgmt.menuName')" width="200" />
         <el-table-column prop="icon" :label="$t('menuMgmt.icon')" width="100">
           <template #default="{ row }">
@@ -35,7 +30,7 @@
         <el-table-column :label="$t('menuMgmt.visible')" width="80">
           <template #default="{ row }">
             <el-tag :type="row.visible ? 'success' : 'info'">
-              {{ row.visible ? '是' : '否' }}
+              {{ row.visible ? $t('common.yes') : $t('common.no') }}
             </el-tag>
           </template>
         </el-table-column>
@@ -54,23 +49,11 @@
     </el-card>
 
     <!-- Menu Dialog -->
-    <el-dialog
-      v-model="dialogVisible"
-      :title="isEdit ? $t('menuMgmt.edit') : $t('menuMgmt.addMenu')"
-      width="600px"
-    >
+    <el-dialog v-model="dialogVisible" :title="isEdit ? $t('menuMgmt.edit') : $t('menuMgmt.addMenu')" width="600px">
       <el-form :model="form" label-width="100px">
         <el-form-item :label="$t('menuMgmt.parentMenu')">
-          <el-tree-select
-            v-model="form.parentId"
-            :data="menuTreeSelectData"
-            :props="{ label: 'name' }"
-            node-key="id"
-            check-strictly
-            clearable
-            placeholder="Select parent menu"
-            style="width: 100%"
-          />
+          <el-tree-select v-model="form.parentId" :data="menuTreeSelectData" :props="{ label: 'name' }" node-key="id"
+            check-strictly clearable :placeholder="$t('menuMgmt.selectParent')" style="width: 100%" />
         </el-form-item>
         <el-form-item :label="$t('menuMgmt.menuName')">
           <el-input v-model="form.name" />
@@ -316,7 +299,7 @@ function handleSave() {
 
 function handleDelete(row: MenuItem) {
   ElMessageBox.confirm(
-    `Are you sure you want to delete menu "${row.name}"?`,
+    `${t('menuMgmt.deleteConfirm')} "${row.name}"?`,
     t('common.tip'),
     {
       confirmButtonText: t('common.confirm'),
@@ -329,7 +312,7 @@ function handleDelete(row: MenuItem) {
       menus.value.splice(index, 1)
     }
     ElMessage.success(t('common.success'))
-  }).catch(() => {})
+  }).catch(() => { })
 }
 </script>
 

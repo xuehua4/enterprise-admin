@@ -17,13 +17,8 @@
         <el-table-column prop="description" :label="$t('role.description')" />
         <el-table-column :label="$t('role.permissions')" width="200">
           <template #default="{ row }">
-            <el-tag
-              v-for="perm in row.permissions.slice(0, 3)"
-              :key="perm"
-              size="small"
-              type="info"
-              style="margin-right: 4px; margin-bottom: 4px;"
-            >
+            <el-tag v-for="perm in row.permissions.slice(0, 3)" :key="perm" size="small" type="info"
+              style="margin-right: 4px; margin-bottom: 4px;">
               {{ perm }}
             </el-tag>
             <el-tag v-if="row.permissions.length > 3" size="small">
@@ -49,11 +44,7 @@
     </el-card>
 
     <!-- Role Dialog -->
-    <el-dialog
-      v-model="dialogVisible"
-      :title="isEdit ? $t('role.edit') : $t('role.addRole')"
-      width="500px"
-    >
+    <el-dialog v-model="dialogVisible" :title="isEdit ? $t('role.edit') : $t('role.addRole')" width="500px">
       <el-form :model="form" label-width="100px">
         <el-form-item :label="$t('role.roleName')">
           <el-input v-model="form.name" />
@@ -72,19 +63,9 @@
     </el-dialog>
 
     <!-- Permission Dialog -->
-    <el-dialog
-      v-model="permDialogVisible"
-      :title="$t('role.assignPermission')"
-      width="600px"
-    >
-      <el-tree
-        ref="permTreeRef"
-        :data="permTreeData"
-        show-checkbox
-        node-key="code"
-        :default-checked-keys="selectedRole?.permissions || []"
-        :props="{ label: 'name', children: 'children' }"
-      />
+    <el-dialog v-model="permDialogVisible" :title="$t('role.assignPermission')" width="600px">
+      <el-tree ref="permTreeRef" :data="permTreeData" show-checkbox node-key="code"
+        :default-checked-keys="selectedRole?.permissions || []" :props="{ label: 'name', children: 'children' }" />
       <template #footer>
         <el-button @click="permDialogVisible = false">{{ $t('common.cancel') }}</el-button>
         <el-button type="primary" @click="handleSavePermission">{{ $t('common.save') }}</el-button>
@@ -173,7 +154,7 @@ function handleSave() {
 
 function handleDelete(row: Role) {
   ElMessageBox.confirm(
-    `Are you sure you want to delete role "${row.name}"?`,
+    `确定要删除角色 "${row.name}" 吗？`,
     t('common.tip'),
     {
       confirmButtonText: t('common.confirm'),
@@ -183,7 +164,7 @@ function handleDelete(row: Role) {
   ).then(() => {
     permissionStore.deleteRole(row.id)
     ElMessage.success(t('common.success'))
-  }).catch(() => {})
+  }).catch(() => { })
 }
 
 function handleAssignPermission(row: Role) {
@@ -196,7 +177,7 @@ function handleSavePermission() {
     const checkedKeys = permTreeRef.value.getCheckedKeys()
     const halfCheckedKeys = permTreeRef.value.getHalfCheckedKeys()
     const allPermissions = [...checkedKeys, ...halfCheckedKeys] as string[]
-    
+
     permissionStore.updateRole(selectedRole.value.id, {
       permissions: allPermissions
     })

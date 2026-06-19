@@ -96,9 +96,11 @@ export const usePermissionStore = defineStore('permission', () => {
   }
 
   function addRole(role: Omit<Role, 'id' | 'createdAt'>) {
+    // 使用自增ID，基于现有角色数量生成简短易读的ID
+    const maxId = roles.value.reduce((max, r) => Math.max(max, parseInt(r.id) || 0), 0)
     const newRole: Role = {
       ...role,
-      id: String(Date.now()),
+      id: String(maxId + 1),
       createdAt: new Date().toISOString().replace('T', ' ').slice(0, 19)
     }
     roles.value.push(newRole)

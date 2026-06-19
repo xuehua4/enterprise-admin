@@ -5,7 +5,9 @@
         <el-card>
           <template #header>
             <div class="card-header">
-              <el-icon size="24" color="#409EFF"><InfoFilled /></el-icon>
+              <el-icon size="24" color="#409EFF">
+                <InfoFilled />
+              </el-icon>
               <span style="margin-left: 8px;">{{ $t('about.title') }}</span>
             </div>
           </template>
@@ -13,7 +15,9 @@
           <div class="about-content">
             <div class="logo-section">
               <div class="logo-icon">
-                <el-icon size="64" color="#409EFF"><Monitor /></el-icon>
+                <el-icon size="64" color="#409EFF">
+                  <Monitor />
+                </el-icon>
               </div>
               <h1 class="app-name">Enterprise Admin</h1>
               <p class="version">{{ $t('about.version') }}: v1.0.0</p>
@@ -40,55 +44,73 @@
             <el-row :gutter="16" style="margin-top: 16px;">
               <el-col :xs="24" :sm="12">
                 <el-card shadow="hover" class="feature-card">
-                  <el-icon size="24" color="#409EFF"><Monitor /></el-icon>
+                  <el-icon size="24" color="#409EFF">
+                    <Monitor />
+                  </el-icon>
                   <p>{{ $t('about.feature1') }}</p>
                 </el-card>
               </el-col>
               <el-col :xs="24" :sm="12">
                 <el-card shadow="hover" class="feature-card">
-                  <el-icon size="24" color="#67C23A"><Document /></el-icon>
+                  <el-icon size="24" color="#67C23A">
+                    <Document />
+                  </el-icon>
                   <p>{{ $t('about.feature2') }}</p>
                 </el-card>
               </el-col>
               <el-col :xs="24" :sm="12">
                 <el-card shadow="hover" class="feature-card">
-                  <el-icon size="24" color="#E6A23C"><Grid /></el-icon>
+                  <el-icon size="24" color="#E6A23C">
+                    <Grid />
+                  </el-icon>
                   <p>{{ $t('about.feature3') }}</p>
                 </el-card>
               </el-col>
               <el-col :xs="24" :sm="12">
                 <el-card shadow="hover" class="feature-card">
-                  <el-icon size="24" color="#F56C6C"><Files /></el-icon>
+                  <el-icon size="24" color="#F56C6C">
+                    <Files />
+                  </el-icon>
                   <p>{{ $t('about.feature4') }}</p>
                 </el-card>
               </el-col>
               <el-col :xs="24" :sm="12">
                 <el-card shadow="hover" class="feature-card">
-                  <el-icon size="24" color="#909399"><Connection /></el-icon>
+                  <el-icon size="24" color="#909399">
+                    <Connection />
+                  </el-icon>
                   <p>{{ $t('about.feature5') }}</p>
                 </el-card>
               </el-col>
               <el-col :xs="24" :sm="12">
                 <el-card shadow="hover" class="feature-card">
-                  <el-icon size="24" color="#409EFF"><TrendCharts /></el-icon>
+                  <el-icon size="24" color="#409EFF">
+                    <TrendCharts />
+                  </el-icon>
                   <p>{{ $t('about.feature6') }}</p>
                 </el-card>
               </el-col>
               <el-col :xs="24" :sm="12">
                 <el-card shadow="hover" class="feature-card">
-                  <el-icon size="24" color="#67C23A"><Translate /></el-icon>
+                  <el-icon size="24" color="#67C23A">
+                    <Guide />
+                  </el-icon>
                   <p>{{ $t('about.feature7') }}</p>
                 </el-card>
               </el-col>
               <el-col :xs="24" :sm="12">
                 <el-card shadow="hover" class="feature-card">
-                  <el-icon size="24" color="#303133"><Moon /></el-icon>
+                  <el-icon size="24" color="#303133">
+                    <Moon />
+                  </el-icon>
                   <p>{{ $t('about.feature8') }}</p>
                 </el-card>
               </el-col>
               <el-col :xs="24" :sm="12">
                 <el-card shadow="hover" class="feature-card">
-                  <el-icon size="24" color="#E6A23C"><Lock /></el-icon>
+                  <el-icon size="24" color="#E6A23C">
+                    <Lock />
+                  </el-icon>
                   <p>{{ $t('about.feature9') }}</p>
                 </el-card>
               </el-col>
@@ -134,7 +156,7 @@
 import { computed } from 'vue'
 import {
   InfoFilled, Monitor, Document, Grid, Files,
-  Connection, TrendCharts, Moon, Lock
+  Connection, TrendCharts, Moon, Lock, Guide
 } from '@element-plus/icons-vue'
 
 const buildTime = computed(() => {

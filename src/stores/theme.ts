@@ -64,4 +64,10 @@ export const useThemeStore = defineStore('theme', () => {
     toggleTheme,
     applyTheme
   }
+}, {
+  /** Pinia 持久化配置：刷新页面后保留主题选择 */
+  persist: {
+    key: 'enterprise_admin_theme',
+    pick: ['theme']
+  }
 })
