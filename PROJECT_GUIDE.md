@@ -242,7 +242,7 @@ const title = t('menu.dashboard')
 # 安装依赖
 pnpm install
 
-# 启动开发服务器（端口 3000，自动打开浏览器）
+# 启动开发服务器（端口 5173，自动打开浏览器）
 pnpm dev
 
 # 构建生产版本（TypeScript 类型检查 + Vite 构建）
@@ -254,7 +254,7 @@ pnpm preview
 
 ## 开发服务器配置
 
-- **端口**：3000
+- **端口**：5173
 - **自动打开浏览器**：`open: true`
 - **API 代理**：
   - `/api` → `http://localhost:8080`（去除 `/api` 前缀后转发）

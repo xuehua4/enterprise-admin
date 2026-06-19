@@ -61,7 +61,7 @@ pnpm install
 pnpm dev
 ```
 
-开发服务器默认运行在 http://localhost:3000
+开发服务器默认运行在 http://localhost:5173
 
 ### 构建生产版本
 
