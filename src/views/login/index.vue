@@ -97,27 +97,24 @@ const form = reactive({
   password: ''
 })
 
-// ==================== 记住我：初始化时从localStorage读取 ====================
+// ==================== 记住我：初始化时从localStorage读取用户名 ====================
 const SAVED_USER_KEY = 'enterprise_admin_remember'
 
-/** 初始化表单：如果之前选择了"记住我"，则恢复用户名密码 */
+/** 初始化表单：如果之前选择了"记住我"，则恢复用户名（不恢复密码，安全考虑） */
 function initForm() {
   const saved = localStorage.getItem(SAVED_USER_KEY)
   if (saved) {
     try {
       const data = JSON.parse(saved)
+      // 只恢复用户名，不恢复密码（安全最佳实践）
       form.username = data.username || ''
-      form.password = data.password || ''
-      rememberMe.value = true
     } catch {
       // 解析失败则使用默认值
       form.username = 'admin'
-      form.password = 'admin123'
     }
   } else {
     // 未保存过，使用默认值
     form.username = 'admin'
-    form.password = 'admin123'
   }
 }
 
@@ -137,11 +134,11 @@ async function handleLogin() {
   if (!formRef.value) return
   await formRef.value.validate()
 
-  // 如果勾选了"记住我"，将用户名密码存入localStorage
+  // 如果勾选了"记住我"，只将用户名存入localStorage（不存密码，安全最佳实践）
   if (rememberMe.value) {
     localStorage.setItem(SAVED_USER_KEY, JSON.stringify({
-      username: form.username,
-      password: form.password
+      username: form.username
+      // 不存储密码，避免明文泄露风险
     }))
   } else {
     // 未勾选则清除已保存的信息
